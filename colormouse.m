@@ -32,9 +32,16 @@ if ischar(input)
         set(0,'defaultfigurecreatefcn',{});
     end
 elseif ishandle(input)
-    onCallBackFn=@(src,EventData) set(gcbf,'WindowButtonDownFcn',@MouseClick,'WindowButtonUpFcn',@MouseUnClick);
-    offCallBackFn=@(src,EventData) set(gcbf,'WindowButtonDownFcn',{},'WindowButtonUpFcn',{});
-
+    numcolors = 200; %number of distinct colors used, 200 produces smooth colormaps that export properly
+    hcmenu = uicontextmenu;
+    %cmaps is cell array of valid colormaps, custom colormaps can be added
+    cmaps={'jet','hsv','hot','cool','spring','summer','autumn','winter','gray','bone','copper','pink','lines','colorcube','flag','prism'};
+    for i=1:length(cmaps)
+        hcbs{i}=['colormap(' cmaps{i} '(' num2str(numcolors) '))'];
+        cmitems(i)=uimenu(hcmenu,'Label',cmaps{i},'Callback',hcbs{i});
+    end
+    onCallBackFn=@(src,EventData) set(gcbf,'WindowButtonDownFcn',@MouseClick,'WindowButtonUpFcn',@MouseUnClick,'UIContextMenu',hcmenu);
+    offCallBackFn=@(src,EventData) set(gcbf,'WindowButtonDownFcn',{},'WindowButtonUpFcn',{},'UIContextMenu',[]);
     toolbars = findall(input,'Type','uitoolbar');
     htt = uitoggletool(toolbars(1),'CData',cm_icon, 'Separator','on', 'ToolTipString','Color Axis Mouse Control', 'OnCallback', onCallBackFn, 'OffCallback', offCallBackFn);
 else
@@ -63,9 +70,11 @@ newmouseposition=get(gcbo,'CurrentPoint');
 oldclim=get(gca,'CLim');
 oldmidpt=(oldclim(1)+oldclim(2))/2;
 oldrange=oldclim(2)-oldclim(1);
-sensitivity = 1/100;
+%sensitivity is how strongly colormap responds to mouse movement. larger
+%numbers mean more sensitive
+sensitivity=1/100;
 mousedelta=newmouseposition(1:2)-oldmouseposition(1:2); %delta x,y for the mouse (typically in the range of 1 to 10)
-mousedelta(1)=min(1/sensitivity/2,abs(mousedelta(1)))*sign(mousedelta(1)); %force mousedelta(1) to be positive
+mousedelta(1)=min(1/sensitivity/2,abs(mousedelta(1)))*sign(mousedelta(1)); %force mousedelta(1) to be less than half of the max sensitivity
 newmidpt=oldmidpt-mousedelta(2)*sensitivity*oldrange;
 newrange=oldrange*(1-mousedelta(1)*sensitivity);
 newclim=[newmidpt-newrange/2 newmidpt+newrange/2];
