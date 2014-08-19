@@ -7,7 +7,10 @@ function [] = colormouse(input,~)
 %
 %   Moving the mouse up and down changes shifts the value of entire
 %   color axis up and down, while moving left and right expands and
-%   contracts the range of the color axis.
+%   contracts the range of the color axis. 
+%
+%   The toggle button also enables a context menu for the figure which
+%   allows the selection of a colormap.
 %
 %   COLORMOUSE(H) adds the toggle button to the figure with handle H. 
 %
@@ -17,10 +20,10 @@ function [] = colormouse(input,~)
 %   COLORMOUSE OFF changes default settings so that all new figures do not
 %   have the colormouse toggle button.
 %
-%   See also CAXIS, UITOGGLETOOL
+%   See also CAXIS, COLORMAP, UITOGGLETOOL
 
 %   Patrick Maher
-%   v. 1.0 8/17/2014
+%   v. 1.1 8/18/2014
 if nargin==0
     input=gcf;
 end
