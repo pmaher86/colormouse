@@ -23,9 +23,10 @@ function [] = colormouse(input,~)
 %   See also CAXIS, COLORMAP, UITOGGLETOOL
 
 %   Patrick Maher
-%   v. 1.1 8/18/2014
+%   v. 1.2 9/16/2014
 if nargin==0
-    input=gcf;
+    input=gcbf;
+    if isempty(input), input=gcf; end
 end
 
 if ischar(input)
@@ -43,6 +44,7 @@ elseif ishandle(input)
         hcbs{i}=['colormap(' cmaps{i} '(' num2str(numcolors) '))'];
         cmitems(i)=uimenu(hcmenu,'Label',cmaps{i},'Callback',hcbs{i});
     end
+    set(hcmenu,'Parent',input);
     onCallBackFn=@(src,EventData) set(gcbf,'WindowButtonDownFcn',@MouseClick,'WindowButtonUpFcn',@MouseUnClick,'UIContextMenu',hcmenu);
     offCallBackFn=@(src,EventData) set(gcbf,'WindowButtonDownFcn',{},'WindowButtonUpFcn',{},'UIContextMenu',[]);
     toolbars = findall(input,'Type','uitoolbar');
